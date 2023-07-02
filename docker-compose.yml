@@ -1,0 +1,49 @@
+version: '3'
+services:
+  discovery-server:
+    build:
+      context: ./discovery-server
+      dockerfile: Dockerfile
+    ports:
+      - 8761:8761
+    networks:
+      - my-network
+
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    ports:
+      - 8888:8888
+    networks:
+      - my-network
+    depends_on:
+      - discovery-server
+
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    networks:
+      - my-network
+    depends_on:
+      - discovery-server
+      - config-server
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - my-network
+    depends_on:
+      - discovery-server
+      - config-server
+      - product-service
+
+networks:
+  my-network:
